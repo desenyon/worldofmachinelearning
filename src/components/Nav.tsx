@@ -2,121 +2,58 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { useXP } from '@/context/XPContext';
 
-const navItems = [
+const links = [
   { href: '/', label: 'Home' },
   { href: '/learn', label: 'Learn' },
-  { href: '/gallery', label: 'Gallery' },
-  { href: '/submit', label: 'Submit' },
-  { href: '/store', label: 'Store' },
-  { href: '/about', label: 'About' },
+  { href: '/dashboard', label: 'Dashboard' },
+  { href: '/device', label: 'Device' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/redeem', label: 'Redeem' },
+  { href: '/admin/review', label: 'Admin' },
 ];
 
 export default function Nav() {
   const pathname = usePathname();
-  const { totalXP } = useXP();
 
   return (
-    <nav
-      className="sticky top-0 z-50 bg-white border-b border-gray-200"
-      role="navigation"
-      aria-label="Main navigation"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-14">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 group"
-            aria-label="World of ML Home"
-          >
-            <div className="relative">
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 28 28"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
+    <header className="sticky top-0 z-50 border-b border-[--color-muted] bg-white/95 backdrop-blur">
+      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
+        <Link href="/" className="flex items-center gap-2">
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-[--color-red] text-sm font-black text-white">
+            ML
+          </span>
+          <span className="font-semibold text-slate-900">WorldOfML v2.0</span>
+        </Link>
+
+        <nav className="hidden gap-1 md:flex" aria-label="Primary">
+          {links.map((link) => {
+            const active = pathname === link.href || pathname.startsWith(`${link.href}/`);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                  active
+                    ? 'bg-[--color-red] text-white'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
               >
-                {/* Hack Club inspired logo mark */}
-                <rect
-                  x="2"
-                  y="2"
-                  width="24"
-                  height="24"
-                  rx="4"
-                  fill="#ec3750"
-                />
-                <path
-                  d="M8 10h4v8H8v-8zm8 0h4v8h-4v-8zm-4 4h4v4h-4v-4z"
-                  fill="white"
-                />
-              </svg>
-              <span 
-                className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full" 
-                style={{ backgroundColor: 'var(--color-accent)' }}
-              />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-semibold text-sm text-slate-900 leading-tight">
-                World of ML
-              </span>
-              <span className="text-xs text-slate-500 font-mono" style={{ fontSize: '0.625rem' }}>
-                HACK CLUB
-              </span>
-            </div>
-          </Link>
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
 
-          {/* Navigation Links */}
-          <div className="flex items-center gap-1">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`
-                    relative px-3 py-1.5 text-sm font-medium rounded transition-colors
-                    ${
-                      isActive
-                        ? 'text-slate-900'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-gray-100'
-                    }
-                  `}
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  {item.label}
-                  {isActive && (
-                    <motion.div
-                      layoutId="nav-indicator"
-                      className="absolute inset-0 rounded -z-10 bg-[#ec3750]/10"
-                      initial={false}
-                      transition={{
-                        type: 'spring',
-                        stiffness: 500,
-                        damping: 35,
-                      }}
-                    />
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* XP Display */}
-          <Link 
-            href="/store"
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#ec3750]/20 bg-[#ec3750]/5 transition-colors hover:bg-[#ec3750]/10"
-          >
-            <span className="text-sm font-mono font-bold text-[#ec3750]">
-              {totalXP} XP
-            </span>
-          </Link>
-        </div>
+        <Link
+          href="https://hackclub.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded-md border border-[--color-red] px-2.5 py-1 text-xs font-semibold text-[--color-red] hover:bg-[--color-red] hover:text-white"
+        >
+          Hack Club
+        </Link>
       </div>
-    </nav>
+    </header>
   );
 }

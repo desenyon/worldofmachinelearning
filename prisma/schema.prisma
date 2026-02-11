@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum SubmissionStatus {
+  submitted
+  approved
+  needs_changes
+}
+
+enum RedemptionStatus {
+  pending
+  approved
+  shipped
+  rejected
+}
+
+model User {
+  id                String             @id @default(cuid())
+  email             String             @unique
+  displayName       String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  lessonProgress    LessonProgress[]
+  timeLogs          TimeLog[]
+  quizAttempts      QuizAttempt[]
+  submissions       ProjectSubmission[]
+  userBadges        UserBadge[]
+  eligibility       DeviceEligibility?
+  redemptionRequests RedemptionRequest[]
+  auditEvents       AuditEvent[]
+}
+
+model Lesson {
+  id          String          @id
+  title       String
+  phase       Int
+  objective   String
+  required    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  progress    LessonProgress[]
+}
+
+model LessonProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  lessonId    String
+  completedAt DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+  lesson      Lesson   @relation(fields: [lessonId], references: [id])
+
+  @@unique([userId, lessonId])
+}
+
+model TimeLog {
+  id          String   @id @default(cuid())
+  userId      String
+  date        DateTime
+  hours       Float
+  note        String
+  proofUrl    String?
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model QuizAttempt {
+  id          String   @id @default(cuid())
+  userId      String
+  lessonId    String
+  score       Float
+  maxScore    Float
+  submittedAt DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model ProjectSubmission {
+  id           String            @id @default(cuid())
+  userId        String
+  title         String
+  track         String
+  metricName    String
+  metricValue   Float
+  repoUrl       String
+  demoUrl       String
+  summary       String
+  modelArtifact String
+  status        SubmissionStatus @default(submitted)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  user          User             @relation(fields: [userId], references: [id])
+  rubricScore   RubricScore?
+}
+
+model RubricScore {
+  id            String            @id @default(cuid())
+  submissionId  String            @unique
+  reviewerId    String?
+  score         Float
+  feedback      String
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  submission    ProjectSubmission @relation(fields: [submissionId], references: [id])
+}
+
+model Badge {
+  id            String      @id
+  title         String
+  description   String
+  createdAt     DateTime    @default(now())
+
+  users         UserBadge[]
+}
+
+model UserBadge {
+  id            String      @id @default(cuid())
+  userId        String
+  badgeId       String
+  earnedAt      DateTime    @default(now())
+
+  user          User        @relation(fields: [userId], references: [id])
+  badge         Badge       @relation(fields: [badgeId], references: [id])
+
+  @@unique([userId, badgeId])
+}
+
+model DeviceCatalog {
+  id            String      @id
+  name          String
+  description   String
+  priceUsd      Float
+  stock         Int
+  active        Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+}
+
+model DeviceEligibility {
+  id                    String    @id @default(cuid())
+  userId                 String    @unique
+  phaseOneComplete       Boolean   @default(false)
+  hoursMet               Boolean   @default(false)
+  metricMet              Boolean   @default(false)
+  rubricMet              Boolean   @default(false)
+  readyToRedeem          Boolean   @default(false)
+  updatedAt              DateTime  @updatedAt
+
+  user                   User      @relation(fields: [userId], references: [id])
+}
+
+model RedemptionRequest {
+  id            String           @id @default(cuid())
+  userId         String
+  status         RedemptionStatus @default(pending)
+  shippingName   String
+  email          String
+  country        String
+  notes          String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  user           User            @relation(fields: [userId], references: [id])
+}
+
+model AuditEvent {
+  id            String   @id @default(cuid())
+  userId         String
+  actor          String
+  eventType      String
+  payload        String
+  createdAt      DateTime @default(now())
+
+  user           User     @relation(fields: [userId], references: [id])
+}

@@ -1,0 +1,65 @@
+{
+  "version": "2.0.0",
+  "updatedAt": "2026-02-11T10:30:00.000Z",
+  "config": {
+    "minHoursForDevice": 40,
+    "rubricPassScore": 85,
+    "metricThresholds": {
+      "image": {
+        "metric": "accuracy",
+        "min": 0.8
+      },
+      "text": {
+        "metric": "f1",
+        "min": 0.75
+      },
+      "audio": {
+        "metric": "f1",
+        "min": 0.7
+      }
+    }
+  },
+  "devices": [
+    {
+      "id": "pi-zero-2w",
+      "name": "Raspberry Pi Zero 2 W Kit",
+      "description": "Low-cost Linux board for local inference and sensors.",
+      "priceUsd": 20,
+      "stock": 250,
+      "active": true
+    },
+    {
+      "id": "esp32-s3",
+      "name": "ESP32-S3 TinyML Kit",
+      "description": "Microcontroller path for low-power always-on inference.",
+      "priceUsd": 10,
+      "stock": 180,
+      "active": true
+    }
+  ],
+  "users": {
+    "demo-learner": {
+      "id": "demo-learner",
+      "displayName": "Demo Learner",
+      "completedLessonIds": [
+        "01-intro"
+      ],
+      "badges": [
+        "kickoff"
+      ],
+      "totalHours": 1.5,
+      "timeLogs": [
+        {
+          "id": "seed-log-1",
+          "date": "2026-02-10",
+          "hours": 1.5,
+          "note": "Set up Python env and ran baseline notebook.",
+          "proofUrl": "https://github.com/example/worldofml-log",
+          "createdAt": "2026-02-10T18:20:00.000Z"
+        }
+      ],
+      "submissions": [],
+      "redemptionRequests": []
+    }
+  }
+}

@@ -1,0 +1,54 @@
+name: docs-lint
+
+on:
+  push:
+    paths:
+      - 'README.md'
+      - 'LESSONS/**'
+      - 'DEVICE_DEPLOYMENT/**'
+      - 'RUBRIC.md'
+      - 'REDEMPTION_PROCESS.md'
+      - '.github/workflows/docs-lint.yml'
+  pull_request:
+    paths:
+      - 'README.md'
+      - 'LESSONS/**'
+      - 'DEVICE_DEPLOYMENT/**'
+      - 'RUBRIC.md'
+      - 'REDEMPTION_PROCESS.md'
+      - '.github/workflows/docs-lint.yml'
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Basic markdown sanity
+        run: |
+          test -f README.md
+          test -f RUBRIC.md
+          test -f REDEMPTION_PROCESS.md
+          ls LESSONS/*.md
+          ls DEVICE_DEPLOYMENT/*.md
+      - name: Check local markdown links
+        run: |
+          python - <<'PY'
+          import pathlib
+          import re
+          root = pathlib.Path('.')
+          pattern = re.compile(r'\[[^\]]+\]\(([^)]+)\)')
+          broken = []
+          for md in root.rglob('*.md'):
+              text = md.read_text(encoding='utf-8')
+              for match in pattern.findall(text):
+                  if match.startswith('http') or match.startswith('#'):
+                      continue
+                  target = (md.parent / match).resolve()
+                  if not target.exists():
+                      broken.append((str(md), match))
+          if broken:
+              for item in broken:
+                  print('broken:', item[0], '->', item[1])
+              raise SystemExit(1)
+          print('markdown links ok')
+          PY

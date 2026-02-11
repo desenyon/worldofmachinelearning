@@ -1,0 +1,21 @@
+{
+  "phaseOneRequiredLessons": [
+    "01-intro",
+    "02-problem-discovery",
+    "03-data-collection-cleaning",
+    "04-feature-engineering",
+    "05-model-design-training",
+    "06-metrics-evaluation",
+    "07-deployment-basics",
+    "08-final-project"
+  ],
+  "eligibility": {
+    "minHours": 40,
+    "rubricPass": 85,
+    "metricThresholds": {
+      "image": { "metric": "accuracy", "min": 0.8 },
+      "text": { "metric": "f1", "min": 0.75 },
+      "audio": { "metric": "f1", "min": 0.7 }
+    }
+  }
+}

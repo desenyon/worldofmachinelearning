@@ -1,0 +1,28 @@
+name: python-templates
+
+on:
+  push:
+    paths:
+      - 'TEMPLATES/**'
+      - '.github/workflows/python-templates.yml'
+  pull_request:
+    paths:
+      - 'TEMPLATES/**'
+      - '.github/workflows/python-templates.yml'
+
+jobs:
+  test-templates:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        template:
+          - image-classifier
+          - text-sentiment
+          - audio-event-detector
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r TEMPLATES/${{ matrix.template }}/requirements.txt pytest
+      - run: pytest -q TEMPLATES/${{ matrix.template }}/tests
